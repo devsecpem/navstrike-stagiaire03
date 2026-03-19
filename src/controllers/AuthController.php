@@ -12,8 +12,9 @@ class AuthController {
             $password = $_POST['password'];
 
             global $conn;
-            $query = "SELECT * FROM operators WHERE callsign = '" . $username . "' AND password = '" . $password . "'";
-            $result = mysqli_query($conn, $query);
+            $stmt = $pdo->prepare("SELECT * FROM operators WHERE callsign = :username AND password = :password");
+			$stmt->execute(['username' => $username, 'password' => $password]);
+			$results = $stmt->fetchAll();;
 
             if (mysqli_num_rows($result) > 0) {
                 session_start();
