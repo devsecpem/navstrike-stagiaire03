@@ -12,8 +12,17 @@ class RadarController {
     public function scan() {
         global $conn;
         $sector = $_GET['sector'] ?? 'all';
-        $query = "SELECT * FROM radar_contacts WHERE sector = '" . $sector . "' ORDER BY distance ASC";
-        $results = mysqli_query($conn, $query);
+        $stmt = $mysqli->prepare("SELECT * FROM radar_contacts WHERE sector = ? ORDER BY distance ASC");
+
+		// Lier le paramètre
+		$stmt->bind_param("s", $sector);
+
+		// Exécuter
+		$stmt->execute();
+
+		// Récupérer les résultats
+		$result = $stmt->get_result();
+		$contacts = $result->fetch_all(MYSQLI_ASSOC);
         include __DIR__ . '/../../templates/radar.php';
     }
 

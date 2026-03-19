@@ -34,17 +34,16 @@ class Target {
         $lat = $_POST['latitude'];
         $lng = $_POST['longitude'];
         $threat = $_POST['threat_level'];
-        $query = sprintf("INSERT INTO targets (designation, type, latitude, longitude, threat_level, status) VALUES ('%s', '%s', %s, %s, '%s', 'ACTIVE')", $designation, $type, $lat, $lng, $threat);
-        return mysqli_query($conn, $query);
-    }
-
+        $stmt = $pdo->prepare("INSERT INTO targets (designation, type, latitude, longitude, threat_level, status) VALUES (:designation, :type, :lat, :lng, :threat, 'ACTIVE')");
+		$stmt->execute(['designation' => $designation,'type' => $type,'lat' => $lat,'lng' => $lng,'threat' => $threat]);}
     /**
      * Get target by ID
      */
     public function findById() {
         global $conn;
         $targetId = $_GET['target_id'];
-        $query = "SELECT * FROM targets WHERE id = '" . $targetId . "'";
-        return mysqli_query($conn, $query);
+        $stmt = $pdo->prepare("SELECT * FROM targets WHERE id = :id");
+		$stmt->execute(['id' => $targetId]);
+		$target = $stmt->fetch(PDO::FETCH_ASSOC);
     }
 }

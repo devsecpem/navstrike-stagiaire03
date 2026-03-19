@@ -21,7 +21,9 @@ class CrewMember {
     public function findByRole() {
         global $conn;
         $role = $_GET['role'];
-        $query = "SELECT * FROM crew WHERE role = '" . $role . "' ORDER BY rank DESC";
+        $stmt = $pdo->prepare("SELECT * FROM crew WHERE role = :role ORDER BY rank DESC");
+		$stmt->execute(['role' => $role]);
+		$crewMembers = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return mysqli_query($conn, $query);
     }
 
@@ -31,7 +33,14 @@ class CrewMember {
     public function listCrew() {
         global $conn;
         $sortBy = $_GET['sort'] ?? 'rank';
-        $query = "SELECT * FROM crew ORDER BY " . $sortBy . " ASC";
+        $allowedSortColumns = ['rank', 'name', 'role', 'id'];
+		if (!in_array($sortBy, $allowedSortColumns)) {
+			$sortBy = 'rank'; // valeur par défaut sécurisée
+		}
+
+		$stmt = $pdo->prepare("SELECT * FROM crew ORDER BY $sortBy ASC");
+		$stmt->execute();
+		$crewMembers = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return mysqli_query($conn, $query);
     }
 }

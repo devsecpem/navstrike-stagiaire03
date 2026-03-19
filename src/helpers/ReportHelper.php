@@ -12,7 +12,10 @@ class ReportHelper {
     public function exportReport($missionId, $format) {
         $outputFile = "/tmp/mission_report_" . $missionId;
         $output = [];
-        exec("wkhtmltopdf /var/www/html/reports/" . $missionId . ".html " . $outputFile . "." . $format, $output);
+        $inputFile  = escapeshellarg("/var/www/html/reports/{$missionId}.html");
+		$outputFile = escapeshellarg($outputFile . "." . $format);
+
+		exec("wkhtmltopdf $inputFile $outputFile", $output);
         echo "<p>Rapport exporte : " . $outputFile . "." . $format . "</p>";
     }
 

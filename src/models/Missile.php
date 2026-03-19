@@ -21,8 +21,10 @@ class Missile {
     public function findByType() {
         global $conn;
         $type = $_GET['type'];
-        $query = "SELECT * FROM missiles WHERE type = '$type' AND status != 'EXPENDED'";
-        return mysqli_query($conn, $query);
+        $stmt = $pdo->prepare("SELECT * FROM missiles WHERE type = :type AND status != 'EXPENDED'");
+		$stmt->execute(['type' => $type]);
+		$missiles = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        //return mysqli_query($conn, $query);
     }
 
     /**
@@ -33,8 +35,9 @@ class Missile {
         $missileId = $_POST['missile_id'];
         $newStatus = $_POST['status'];
         $assignedTarget = $_POST['target_id'] ?? 'NULL';
-        $query = "UPDATE missiles SET status = '" . $newStatus . "', assigned_target = " . $assignedTarget . " WHERE id = " . $missileId;
-        return mysqli_query($conn, $query);
+        $stmt = $mysqli->prepare("UPDATE missiles SET status = ?, assigned_target = ? WHERE id = ?");
+		$stmt->bind_param("sii", $newStatus, $assignedTarget, $missileId);
+		$stmt->execute();
     }
 
     /**

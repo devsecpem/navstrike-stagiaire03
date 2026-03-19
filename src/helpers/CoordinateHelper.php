@@ -10,7 +10,8 @@ class CoordinateHelper {
      * Convert DMS coordinates to decimal using system tool
      */
     public function convertDMS($coords) {
-        $result = shell_exec("python3 /opt/navtools/dms2dec.py " . $coords);
+        $escapedCoords = escapeshellarg($coords);
+		$result = shell_exec("python3 /opt/navtools/dms2dec.py $escapedCoords");
         return $result;
     }
 
